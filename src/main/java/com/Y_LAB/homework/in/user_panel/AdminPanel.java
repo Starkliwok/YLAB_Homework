@@ -1,0 +1,179 @@
+package com.Y_LAB.homework.in.user_panel;
+
+import com.Y_LAB.homework.audit.UserAudit;
+import com.Y_LAB.homework.in.util.ConsoleReader;
+import com.Y_LAB.homework.roles.Admin;
+import com.Y_LAB.homework.roles.User;
+
+/**
+ * Класс для вывода панели администратора и взаимодействия с ней
+ * @author Денис Попов
+ * @version 1.0
+ */
+public class AdminPanel {
+
+    /** Поле администратора для взаимодействия с методами класса администратора.*/
+    private static Admin admin;
+
+    private AdminPanel() {}
+
+    /**
+     * Метод для вывода информации возможных действий администратора,
+     * вызывает метод {@link AdminPanel#adminPageChooseAction()}
+     * @param admin используется для присваивания объекта статическому полю {@link AdminPanel#admin}.
+     */
+    public static void printAdminPage(Admin admin) {
+        AdminPanel.admin = admin;
+        System.out.println("""
+                 //Панель администратора//\s
+                 Выберите действие:\s
+                 1 - Посмотреть список пользователей\s
+                 2 - Получить возможности пользователя\s
+                 3 - Получить лог действий пользователей\s
+                 0 - Выход из Аккаунта""");
+        adminPageChooseAction();
+    }
+
+    /**
+     * Метод для выбора действия администратора <br>
+     * 1 - {@link AdminPanel#showAllUsers()} Посмотреть список пользователей<br>
+     * 2 - {@link UserPanel#printUserPage(User)} Получить возможности пользователя<br>
+     * 3 - {@link UserAudit#getLog()} Получить лог действий пользователей<br>
+     * 0 - {@link HomePanel#printStartPage()} Выход из Аккаунта<br>
+     * любое другое значение выводит сообщение об ошибке и рекурсивно вызывает метод
+     */
+    private static void adminPageChooseAction() {
+        switch (ConsoleReader.PageChoose()) {
+            case 1:
+                showAllUsers();
+                break;
+            case 2:
+                UserPanel.printUserPage(admin);
+                break;
+            case 3:
+                System.out.println(UserAudit.getLog());
+                break;
+            case 0:
+                HomePanel.printStartPage();
+                break;
+            default:
+                System.out.println("Некорректный ввод данных, повторите попытку");
+                adminPageChooseAction();
+        }
+    }
+
+    /**
+     * Метод выводит информацию о пользователях, а так же считывает выбор действия администратора с пользователями<br>
+     * 1 - {@link AdminPanel#chooseUserToInteract()} Перейти к выбору пользователя<br>
+     * 0 - {@link UserPanel#printUserPage(User)} Назад <br>
+     * любое другое значение выводит сообщение об ошибке и вызывает метод <br> {@link AdminPanel#printAdminPage(Admin)}
+     */
+    private static void showAllUsers() {
+        User.getUserSet().forEach(System.out::println);
+        System.out.println("""
+                 \nВыберите действие:\s
+                 1 - Выбрать пользователя для взаимодействия с его аккаунтом\s
+                 0 - Назад""");
+        switch (ConsoleReader.PageChoose()) {
+            case 1:
+                chooseUserToInteract();
+                break;
+            case 0:
+                UserPanel.printUserPage(admin);
+                break;
+            default:
+                System.out.println("Некорректный ввод данных, повторите попытку");
+                printAdminPage(admin);
+        }
+    }
+
+    /**
+     * Метод предназначен для выбора пользователя и взаимодействии с ним.
+     * Считывает введенный id пользователя администратором, получает объект пользователя основываясь на id,
+     * в случае если пользователя с таким id не существует, то вызывается метод {@link AdminPanel#showAllUsers()}. <br>
+     * Если же пользователь существует, то он проверяется на принадлежность к администратору, поскольку администратор
+     * может взаимодействовать с пользователями, но администратор не может взаимодействовать с другим администратором,
+     * в случае несоответствия вызывается метод {@link AdminPanel#showAllUsers()} <br>
+     * исключение: если администратор выбирает самого себя для взаимодействия. <br>
+     * вызывается метод {@link AdminPanel#chooseActionWithUser(User)}
+     */
+    private static void chooseUserToInteract() {
+        System.out.println("Введите id пользователя для взаимодействия или любое другое число для выхода");
+        int id = ConsoleReader.enterIntValue();
+        User user = User.getUserSet().stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+        if(user == null) {
+            showAllUsers();
+        } else if(user instanceof Admin && id != admin.getId()) {
+            System.out.println("Администратор не имеет доступа к изменению данных аккаунта другого администратора");
+            showAllUsers();
+        }
+        chooseActionWithUser(user);
+    }
+
+    /**
+     * Метод для выбора действия администратора с переданным пользователем <br>
+     * 1 - используется для изменения логина пользователя, считывается новый логин, проверяется на наличие такого логина
+     * у другого пользователя, в случае если логин не зарезервирован, то вызывается метод <br>
+     * {@link Admin#updateUserName(User, String)} для изменения логина, после изменения метод рекурсивно вызывается
+     * для дальнейший действий с пользователем со стороны администратора <br>
+     * 2 - используется для изменения пароля пользователя, считывается новый пароль вызывается метод <br>
+     * {@link Admin#updateUserPassword(User, String)} для изменения пароля, после изменения метод работает аналогично
+     * как и метод по изменению логина <br>
+     * 3 - вызывается метод {@link Admin#deleteUser(User)} в случае если указанный пользователь является
+     * администратором, то удаляется его собственный аккаунт, почему так происходит описано в <br>
+     * {@link AdminPanel#chooseUserToInteract()} в случае если пользователь не является администратором,
+     * он так же удаляется <br>
+     * 4 - {@link UserPanel#printUserPage(User)} используется для взаимодействием с дневником тренировок
+     * выбранного пользователя<br>
+     * 0 - {@link AdminPanel#showAllUsers()} возвращает на домашнюю страницу<br>
+     * любое другое значение выводит сообщение об ошибке и рекурсивно вызывает метод
+     * @param user пользователь, с которым происходит взаимодействие
+     */
+    private static void chooseActionWithUser(User user) {
+        System.out.println("""
+                Выберите действие:\s
+                1 - Изменить логин пользователя\s
+                2 - Изменить пароль пользователя\s
+                3 - Удалить пользователя\s
+                4 - Действия с дневником тренировок пользователя\s
+                0 - Назад""");
+        switch (ConsoleReader.PageChoose()) {
+            case 1:
+                System.out.println("Введите новый логин");
+                String newName = ConsoleReader.enterStringValue(3);
+                if(User.getAllReservedUsernamesAndPasswords().containsKey(newName)) {
+                    System.out.println("Такой логин уже зарезервирован");
+                } else {
+                    admin.updateUserName(user, newName);
+                    System.out.println("Вы успешно изменили логин пользователя");
+                }
+                chooseActionWithUser(user);
+                break;
+            case 2:
+                System.out.println("Введите новый пароль");
+                String newPassword = ConsoleReader.enterStringValue(3);
+                admin.updateUserPassword(user, newPassword);
+                System.out.println("Вы успешно изменили пароль пользователя");
+                chooseActionWithUser(user);
+                break;
+            case 3:
+                admin.deleteUser(user);
+                if(user instanceof Admin) {
+                    System.out.println("Вы удалили свой аккаунт");
+                    HomePanel.printStartPage();
+                }
+                System.out.println("Вы успешно удалили пользователя");
+                chooseUserToInteract();
+                break;
+            case 4:
+                UserPanel.printUserPage(user);
+                break;
+            case 0:
+                showAllUsers();
+                break;
+            default:
+                System.out.println("Некорректный ввод данных, повторите попытку");
+                chooseActionWithUser(user);
+        }
+    }
+}
