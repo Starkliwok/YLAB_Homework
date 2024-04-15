@@ -33,18 +33,18 @@ public class HomePanel {
 
     /**
      * Метод считывает ввод пользователя и на его основе вызывает методы <br>
-     * 1 - {@link AuthorizationPanel#printLogInPage()} Авторизация<br>
-     * 2 - {@link RegistrationPanel#printRegistrationPage()} Регистрация<br>
+     * 1 - {@link AuthorizationPanel#logOn()} Авторизация<br>
+     * 2 - {@link RegistrationPanel#signUp()} Регистрация<br>
      * 0 - Завершение работы приложения<br>
      * В других случаях выводит информацию о некорректном вводе данных и рекурсивно вызывает метод
      */
     private static void startPageChooseAction() {
         switch (ConsoleReader.PageChoose()) {
             case 1:
-                AuthorizationPanel.printLogInPage();
+                AuthorizationPanel.logOn();
                 break;
             case 2:
-                RegistrationPanel.printRegistrationPage();
+                RegistrationPanel.signUp();
                 break;
             case 0:
                 UserAudit.addLog("exit", LocalDateTime.now(), "", UserAuditResult.SUCCESS);

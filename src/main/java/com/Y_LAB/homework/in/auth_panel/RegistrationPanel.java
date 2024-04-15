@@ -24,19 +24,19 @@ public class RegistrationPanel {
     /**
      * Метод для вывода информации по регистрации пользователя,
      * считывает введённый логин пользователя, вызывает метод
-     * {@link RegistrationPanel#printPasswordRegistrationPage(String)} с параметром логина.
+     * {@link RegistrationPanel#enterPasswordForRegistration(String)} с параметром логина.
      * Метод работает рекурсивно, в случае если пользователь с указанным логином уже существует или логин
      * не соответствует формату
      */
-    public static void printRegistrationPage() {
+    public static void signUp() {
         String username;
         try {
             System.out.print("Введите логин: ");
             username = ConsoleReader.enterUsername();
-            printPasswordRegistrationPage(username);
+            enterPasswordForRegistration(username);
         } catch (UserAlreadyExistsException | UsernameFormatException ex) {
             System.out.println(ex.getMessage());
-            printRegistrationPage();
+            signUp();
         }
     }
 
@@ -50,7 +50,7 @@ public class RegistrationPanel {
      * пользователя {@link HomePanel#printStartPage()}
      * @param username логин будущего пользователя
      */
-    private static void printPasswordRegistrationPage(String username) {
+    private static void enterPasswordForRegistration(String username) {
         String password;
         try {
             System.out.print("Введите пароль: ");
@@ -60,7 +60,7 @@ public class RegistrationPanel {
             createNewUser(username, password);
         } catch (PasswordsDoNotMatchException | PasswordFormatException ex) {
             System.out.println(ex.getMessage());
-            printPasswordRegistrationPage(username);
+            enterPasswordForRegistration(username);
             UserAudit.addLog("Registration", LocalDateTime.now(), username, UserAuditResult.FAIL);
         }
         UserAudit.addLog("Registration", LocalDateTime.now(), username, UserAuditResult.SUCCESS);
