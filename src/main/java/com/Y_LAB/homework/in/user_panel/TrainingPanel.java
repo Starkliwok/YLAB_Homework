@@ -115,16 +115,15 @@ public class TrainingPanel {
                 1 - Да\s
                 0 - Нет""");
         switch (ConsoleReader.PageChoose()) {
-            case 1:
+            case 1 ->
                 addAdditionalDataToTraining(user, training);
-                break;
-            case 0:
-                return;
-            default:
+            case 0 -> {}
+            default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 UserAudit.addLog("add additional data to training", LocalDateTime.now()
                         , user.getUsername(), UserAuditResult.FAIL);
                 chooseToAddAdditionalDataToTraining(user, training);
+            }
         }
     }
 

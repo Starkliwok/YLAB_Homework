@@ -40,19 +40,18 @@ public class HomePanel {
      */
     private static void startPageChooseAction() {
         switch (ConsoleReader.PageChoose()) {
-            case 1:
+            case 1 ->
                 AuthorizationPanel.logOn();
-                break;
-            case 2:
+            case 2 ->
                 RegistrationPanel.signUp();
-                break;
-            case 0:
+            case 0 -> {
                 UserAudit.addLog("exit", LocalDateTime.now(), "", UserAuditResult.SUCCESS);
                 System.exit(0);
-                break;
-            default:
+            }
+            default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 startPageChooseAction();
+            }
         }
     }
 }
