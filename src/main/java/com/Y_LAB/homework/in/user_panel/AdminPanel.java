@@ -44,21 +44,18 @@ public class AdminPanel {
      */
     private static void adminPageChooseAction() {
         switch (ConsoleReader.PageChoose()) {
-            case 1:
+            case 1 ->
                 showAllUsers();
-                break;
-            case 2:
+            case 2 ->
                 UserPanel.printUserPage(admin);
-                break;
-            case 3:
+            case 3 ->
                 System.out.println(UserAudit.getLog());
-                break;
-            case 0:
+            case 0 ->
                 HomePanel.printStartPage();
-                break;
-            default:
+            default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 adminPageChooseAction();
+            }
         }
     }
 
@@ -75,15 +72,14 @@ public class AdminPanel {
                  1 - Выбрать пользователя для взаимодействия с его аккаунтом\s
                  0 - Назад""");
         switch (ConsoleReader.PageChoose()) {
-            case 1:
+            case 1 ->
                 chooseUserToInteract();
-                break;
-            case 0:
+            case 0 ->
                 UserPanel.printUserPage(admin);
-                break;
-            default:
+            default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 printAdminPage(admin);
+            }
         }
     }
 
@@ -138,42 +134,41 @@ public class AdminPanel {
                 4 - Действия с дневником тренировок пользователя\s
                 0 - Назад""");
         switch (ConsoleReader.PageChoose()) {
-            case 1:
+            case 1 -> {
                 System.out.println("Введите новый логин");
                 String newName = ConsoleReader.enterStringValue(3);
-                if(User.getAllReservedUsernamesAndPasswords().containsKey(newName)) {
+                if (User.getAllReservedUsernamesAndPasswords().containsKey(newName)) {
                     System.out.println("Такой логин уже зарезервирован");
                 } else {
                     admin.updateUserName(user, newName);
                     System.out.println("Вы успешно изменили логин пользователя");
                 }
                 chooseActionWithUser(user);
-                break;
-            case 2:
+            }
+            case 2 -> {
                 System.out.println("Введите новый пароль");
                 String newPassword = ConsoleReader.enterStringValue(3);
                 admin.updateUserPassword(user, newPassword);
                 System.out.println("Вы успешно изменили пароль пользователя");
                 chooseActionWithUser(user);
-                break;
-            case 3:
+            }
+            case 3 -> {
                 admin.deleteUser(user);
-                if(user instanceof Admin) {
+                if (user instanceof Admin) {
                     System.out.println("Вы удалили свой аккаунт");
                     HomePanel.printStartPage();
                 }
                 System.out.println("Вы успешно удалили пользователя");
                 chooseUserToInteract();
-                break;
-            case 4:
+            }
+            case 4 ->
                 UserPanel.printUserPage(user);
-                break;
-            case 0:
+            case 0 ->
                 showAllUsers();
-                break;
-            default:
+            default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 chooseActionWithUser(user);
+            }
         }
     }
 }

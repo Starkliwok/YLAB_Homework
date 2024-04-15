@@ -122,7 +122,7 @@ public class ConsoleReader {
      * @return пользовательский ввод
      */
     public static String enterUsername() throws UsernameFormatException, UserAlreadyExistsException {
-        String username = scanner.nextLine();
+        String username = scanner.next();
         if(username.length() < 2) {
             throw new UsernameFormatException("Минимальная длина имени - 2 символа, повторите попытку\n");
         } else if(User.getUsernameSet().contains(username)) {
@@ -137,7 +137,7 @@ public class ConsoleReader {
      * @return пользовательский ввод
      */
     public static String enterPassword() throws PasswordFormatException {
-        String password = scanner.nextLine();
+        String password = scanner.next();
         if(password.length() < 6) {
             throw new PasswordFormatException("Минимальная длина пароля - 6 символов, повторите попытку\n");
         }
@@ -150,7 +150,7 @@ public class ConsoleReader {
      * @param password пароль, который пользователь уже ввел до этого
      */
     public static void repeatPassword(String password) throws PasswordsDoNotMatchException {
-        if(!password.equals(scanner.nextLine())) {
+        if(!password.equals(scanner.next())) {
             throw new PasswordsDoNotMatchException("Пароли не совпадают, повторите попытку\n");
         }
     }

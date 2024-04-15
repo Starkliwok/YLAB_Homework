@@ -59,32 +59,26 @@ public class UserPanel {
      */
     private static void userPageChooseAction() {
         switch (ConsoleReader.PageChoose()) {
-            case 1:
+            case 1 ->
                 printTrainingList();
-                break;
-            case 2:
+            case 2 ->
                 printTrainingCaloriesBurnedStatistics();
-                break;
-            case 3:
+            case 3 ->
                 printAddTrainingPage();
-                break;
-            case 4:
+            case 4 ->
                 deleteTraining();
-                break;
-            case 5:
+            case 5 ->
                 updateTraining();
-                break;
-            case 0:
-                if(user instanceof Admin)
+            case 0 -> {
+                if (user instanceof Admin)
                     AdminPanel.printAdminPage((Admin) user);
-                 else {
-                    UserAudit.addLog("Exit from the app", LocalDateTime.now(), user.getUsername(), UserAuditResult.SUCCESS);
-                    HomePanel.printStartPage();
-                }
-                 break;
-            default:
+                UserAudit.addLog("Exit from the app", LocalDateTime.now(), user.getUsername(), UserAuditResult.SUCCESS);
+                HomePanel.printStartPage();
+            }
+            default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 userPageChooseAction();
+            }
         }
     }
 
@@ -102,10 +96,12 @@ public class UserPanel {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         System.out.println("Лист тренировок отсортированных убыванию даты: \n");
 
-        List<Date> sortedList = new ArrayList<>(user.getTrainingHistory().keySet().stream().toList());
-        sortedList.sort((o1, o2) -> (o1.after(o2) ? -1 : o1.equals(o2) ? 0 : 1));
+        Comparator<Date> descByDate = (o1, o2) -> o1.after(o2) ? -1 : o1.equals(o2) ? 0 : 1;
 
-        for(Date date : sortedList) {
+        List<Date> allSortedDatesFromTrainingHistory = new ArrayList<>(user.getTrainingHistory().keySet().stream().toList())
+                .stream().sorted(descByDate).toList();
+
+        for(Date date : allSortedDatesFromTrainingHistory) {
             System.out.println("\n" + formatter.format(date));
             user.getTrainingHistory().get(date).forEach(System.out::println);
             System.out.println("---------------------------------------------------");
@@ -260,40 +256,39 @@ public class UserPanel {
     private static void updateField(Training training) {
         System.out.println("\nВведите номер поля для изменения:");
         switch (ConsoleReader.enterIntValue()){
-            case 1:
+            case 1 -> {
                 System.out.print("Введите новое значение для поля: ");
                 training.setName(ConsoleReader.enterStringValue(3));
                 UserAudit.addLog("update training name", LocalDateTime.now()
                         , user.getUsername(), UserAuditResult.SUCCESS);
-                break;
-            case 2:
+            }
+            case 2 -> {
                 System.out.print("Введите новое значение для поля: ");
                 training.setCaloriesSpent(ConsoleReader.enterIntValue());
                 UserAudit.addLog("update training calories spent", LocalDateTime.now()
                         , user.getUsername(), UserAuditResult.SUCCESS);
-                break;
-            case 3:
+            }
+            case 3 -> {
                 System.out.print("Введите новое значение для поля: ");
                 training.setDurationInMinutes(ConsoleReader.enterDoubleValue());
                 UserAudit.addLog("update training duration in minutes", LocalDateTime.now()
                         , user.getUsername(), UserAuditResult.SUCCESS);
-                break;
-            case 4:
-                updateAdditionalFields(training);
-                break;
-            case 5:
+            }
+            case 4 ->
+                    updateAdditionalFields(training);
+            case 5 -> {
                 System.out.println("Введите новое значение для поля: ");
                 training.setType(ConsoleReader.enterStringValue(3));
-            case 0:
-                chooseTraining("изменения");
-                break;
-            default:
+            }
+            case 0 ->
+                    chooseTraining("изменения");
+            default -> {
                 System.out.println("Число не соответствует полю, попробуйте ещё раз");
 
                 UserAudit.addLog("update training", LocalDateTime.now()
                         , user.getUsername(), UserAuditResult.FAIL);
-
                 updateField(training);
+            }
         }
         System.out.println("""
                  Вы успешно изменили поле:\s
