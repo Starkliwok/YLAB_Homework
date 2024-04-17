@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="001-create-training-dairy-schemas.xml" relativeToChangelogFile="true"/>
+    <include file="002-create-training-dairy-tables.xml" relativeToChangelogFile="true"/>
+    <include file="003-create-training-dairy-sequences.xml" relativeToChangelogFile="true"/>
+    <include file="004-insert-training-dairy-data.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
