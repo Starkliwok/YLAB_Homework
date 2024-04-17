@@ -32,9 +32,9 @@ public class LiquibaseEx {
                     new Liquibase(properties.getProperty("changeLogFile"), new ClassLoaderResourceAccessor(), database);
             liquibase.update();
         } catch (DatabaseException e) {
-            System.out.println("Database Exception in migration " + e.getMessage());;
+            System.out.println("Database Exception in migration " + e.getMessage());
         } catch (LiquibaseException e) {
-            System.out.println("Liquibase Exception in migration " + e.getMessage());;
+            System.out.println("Liquibase Exception in migration " + e.getMessage());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
