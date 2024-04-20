@@ -344,11 +344,13 @@ public class UserPanel {
         for(String key : additionalDataMap.keySet()) {
             System.out.println(key);
         }
-        System.out.println("\nВыберите действие " +
-                "\n1 - Изменить дополнительную информацию " +
-                "\n2 - Удалить дополнительную информацию" +
-                "\n3 - Добавить новую дополнительную информацию" +
-                "\nЛюбое другое число - Назад");
+        System.out.println("""
+                
+                Выберите действие\s
+                1 - Изменить дополнительную информацию\s
+                2 - Удалить дополнительную информацию
+                3 - Добавить новую дополнительную информацию
+                Любое другое число - Назад""");
         switch(ConsoleReader.enterIntValue()) {
             case 1 ->
                 updateAdditionalField(additionalDataMap, training);
