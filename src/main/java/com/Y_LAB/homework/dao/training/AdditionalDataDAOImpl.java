@@ -1,7 +1,5 @@
 package com.Y_LAB.homework.dao.training;
 
-import com.Y_LAB.homework.dao.audit.UserAuditDAO;
-import com.Y_LAB.homework.dao.audit.UserAuditDAOImpl;
 import com.Y_LAB.homework.entity.trainings.AdditionalData;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
 

@@ -1,7 +1,6 @@
 package com.Y_LAB.homework.dao.audit;
 
 import com.Y_LAB.homework.audit.UserAuditResult;
-import com.Y_LAB.homework.dao.user.UserDAOImpl;
 import com.Y_LAB.homework.entity.UserAudit;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
 

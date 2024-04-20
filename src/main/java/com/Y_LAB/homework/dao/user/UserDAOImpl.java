@@ -1,7 +1,5 @@
 package com.Y_LAB.homework.dao.user;
 
-import com.Y_LAB.homework.dao.training.TrainingDAO;
-import com.Y_LAB.homework.dao.training.TrainingDAOImpl;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.exception.auth.WrongUsernameAndPasswordException;
 import com.Y_LAB.homework.roles.Admin;
