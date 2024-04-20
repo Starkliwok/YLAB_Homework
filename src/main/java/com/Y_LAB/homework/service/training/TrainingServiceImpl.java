@@ -19,27 +19,14 @@ import java.util.List;
 public class TrainingServiceImpl implements TrainingService {
 
     /** Поле для взаимодействия с дополнительной информацией тренировок в базе данных*/
-    private static AdditionalDataDAO additionalDataDAO;
+    private final AdditionalDataDAO additionalDataDAO;
 
     /** Поле для взаимодействия с тренировками в базе данных*/
-    private static TrainingDAO trainingDAO;
+    private final TrainingDAO trainingDAO;
 
-    /** Поле для вызова методов {@link AdditionalDataDAO} и {@link TrainingDAO}*/
-    private static TrainingService trainingService;
-
-    private TrainingServiceImpl() {}
-
-    /**
-     * Метод присваивает значения полям класса, если до этого они не были присвоены
-     * @return объект класса
-     */
-    public static TrainingService getService() {
-        if (trainingService == null) {
-            additionalDataDAO = new AdditionalDataDAOImpl();
-            trainingDAO = new TrainingDAOImpl();
-            trainingService = new TrainingServiceImpl();
-        }
-        return trainingService;
+    public TrainingServiceImpl() {
+        additionalDataDAO = AdditionalDataDAOImpl.getInstance();
+        trainingDAO = TrainingDAOImpl.getInstance();
     }
 
     /**

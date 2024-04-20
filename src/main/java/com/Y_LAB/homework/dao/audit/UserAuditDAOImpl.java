@@ -1,6 +1,7 @@
 package com.Y_LAB.homework.dao.audit;
 
 import com.Y_LAB.homework.audit.UserAuditResult;
+import com.Y_LAB.homework.dao.user.UserDAOImpl;
 import com.Y_LAB.homework.entity.UserAudit;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
 
@@ -18,6 +19,21 @@ public class UserAuditDAOImpl implements UserAuditDAO {
 
     /** Поле для подключения к базе данных*/
     private final Connection connection = ConnectionToDatabase.getConnection();
+
+    /** Поле для получения объекта класса*/
+    private static UserAuditDAO userAuditDAO;
+
+    private UserAuditDAOImpl() {}
+
+    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
+     * @return объекта класса
+     * */
+    public static UserAuditDAO getInstance() {
+        if(userAuditDAO == null) {
+            userAuditDAO = new UserAuditDAOImpl();
+        }
+        return userAuditDAO;
+    }
 
     /**
      * Метод для получения всех аудитов пользователей из базы данных

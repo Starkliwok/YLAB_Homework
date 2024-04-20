@@ -22,27 +22,14 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     /** Поле для взаимодействия с пользователями в базе данных*/
-    private static UserDAO userDAO;
+    private final UserDAO userDAO;
 
     /** Поле для взаимодействия с аудитом пользователей в базе данных*/
-    private static UserAuditDAO userAuditDAO;
+    private final UserAuditDAO userAuditDAO;
 
-    /** Поле для вызова методов {@link UserDAO} и {@link UserAuditDAO}*/
-    private static UserService userService;
-
-    private UserServiceImpl() {}
-
-    /**
-     * Метод присваивает значения полям класса, если до этого они не были присвоены
-     * @return объект класса
-     */
-    public static UserService getService() {
-        if (userService == null) {
-            userDAO = new UserDAOImpl();
-            userAuditDAO = new UserAuditDAOImpl();
-            userService = new UserServiceImpl();
-        }
-        return userService;
+    public UserServiceImpl() {
+        userDAO = UserDAOImpl.getInstance();
+        userAuditDAO = UserAuditDAOImpl.getInstance();
     }
 
     /**

@@ -19,7 +19,7 @@ import com.Y_LAB.homework.service.user.UserServiceImpl;
 public class RegistrationPanel {
 
     /** Поле сервиса для взаимодействия с базой данных*/
-    private static final UserService userService = UserServiceImpl.getService();
+    private static final UserService userService = new UserServiceImpl();
 
     private RegistrationPanel() {}
 

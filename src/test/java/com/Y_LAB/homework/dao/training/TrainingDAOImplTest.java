@@ -24,7 +24,7 @@ class TrainingDAOImplTest {
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
     private Connection connection;
 
-    private final TrainingDAO trainingDAO = new TrainingDAOImpl();
+    private final TrainingDAO trainingDAO = TrainingDAOImpl.getInstance();
 
     @BeforeAll
     public static void setUp() {

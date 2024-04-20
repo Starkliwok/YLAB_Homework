@@ -22,7 +22,7 @@ class AdditionalDataDAOImplTest {
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
     private Connection connection;
 
-    private final AdditionalDataDAO additionalDataDAO = new AdditionalDataDAOImpl();
+    private final AdditionalDataDAO additionalDataDAO = AdditionalDataDAOImpl.getInstance();
 
     @BeforeAll
     public static void setUp() {
@@ -38,10 +38,10 @@ class AdditionalDataDAOImplTest {
     @Test
     public void getAllAdditionalData() throws SQLException {
 
-        int actual = TrainingServiceImpl.getService().getTraining(2).getAdditionalDataMap().size();
+        int actual = new TrainingServiceImpl().getTraining(2).getAdditionalDataMap().size();
         additionalDataDAO.saveAdditionalData("Раз", "150", 2);
 
-        int expected = TrainingServiceImpl.getService().getTraining(2).getAdditionalDataMap().size();
+        int expected = new TrainingServiceImpl().getTraining(2).getAdditionalDataMap().size();
 
         assertThat(actual).isEqualTo(expected - 1);
         Statement statement = connection.createStatement();

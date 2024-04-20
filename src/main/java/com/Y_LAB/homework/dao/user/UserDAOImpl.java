@@ -1,5 +1,7 @@
 package com.Y_LAB.homework.dao.user;
 
+import com.Y_LAB.homework.dao.training.TrainingDAO;
+import com.Y_LAB.homework.dao.training.TrainingDAOImpl;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.exception.auth.WrongUsernameAndPasswordException;
 import com.Y_LAB.homework.roles.Admin;
@@ -18,6 +20,21 @@ public class UserDAOImpl implements UserDAO {
 
     /** Поле для подключения к базе данных*/
     private final Connection connection = ConnectionToDatabase.getConnection();
+
+    /** Поле для получения объекта класса*/
+    private static UserDAO userDAO;
+
+    private UserDAOImpl() {}
+
+    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
+     * @return объекта класса
+     * */
+    public static UserDAO getInstance() {
+        if(userDAO == null) {
+            userDAO = new UserDAOImpl();
+        }
+        return userDAO;
+    }
 
     /**
      * Метод для получения всех пользователей из базы данных

@@ -20,6 +20,21 @@ public class TrainingDAOImpl implements TrainingDAO {
     /** Поле для подключения к базе данных*/
     private final Connection connection = ConnectionToDatabase.getConnection();
 
+    /** Поле для получения объекта класса*/
+    private static TrainingDAO trainingDAO;
+
+    private TrainingDAOImpl() {}
+
+    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
+     * @return объекта класса
+     * */
+    public static TrainingDAO getInstance() {
+        if(trainingDAO == null) {
+            trainingDAO = new TrainingDAOImpl();
+        }
+        return trainingDAO;
+    }
+
     /**
      * Метод для получения всех тренировок пользователя из базы данных
      * @param userId идентификационный номер пользователя

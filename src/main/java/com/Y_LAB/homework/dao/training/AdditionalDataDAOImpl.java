@@ -1,5 +1,7 @@
 package com.Y_LAB.homework.dao.training;
 
+import com.Y_LAB.homework.dao.audit.UserAuditDAO;
+import com.Y_LAB.homework.dao.audit.UserAuditDAOImpl;
 import com.Y_LAB.homework.entity.trainings.AdditionalData;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
 
@@ -19,6 +21,21 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
 
     /** Поле для подключения к базе данных*/
     private final Connection connection = ConnectionToDatabase.getConnection();
+
+    /** Поле для получения объекта класса*/
+    private static AdditionalDataDAO additionalDataDAO;
+
+    private AdditionalDataDAOImpl() {}
+
+    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
+     * @return объекта класса
+     * */
+    public static AdditionalDataDAO getInstance() {
+        if(additionalDataDAO == null) {
+            additionalDataDAO = new AdditionalDataDAOImpl();
+        }
+        return additionalDataDAO;
+    }
 
     /**
      * Метод для получения всей дополнительной информации тренировки из базы данных

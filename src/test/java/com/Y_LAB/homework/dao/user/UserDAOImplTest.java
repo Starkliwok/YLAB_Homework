@@ -22,7 +22,7 @@ class UserDAOImplTest {
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
     private Connection connection;
 
-    private final UserDAO userDAO = new UserDAOImpl();
+    private final UserDAO userDAO = UserDAOImpl.getInstance();
 
     @BeforeAll
     public static void setUp() {

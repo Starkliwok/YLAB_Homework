@@ -23,7 +23,7 @@ class UserAuditDAOImplTest {
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
     private Connection connection;
 
-    private final UserAuditDAO userAudit = new UserAuditDAOImpl();
+    private final UserAuditDAO userAudit = UserAuditDAOImpl.getInstance();
 
     @BeforeAll
     public static void setUp() {

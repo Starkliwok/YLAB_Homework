@@ -28,10 +28,10 @@ public class UserPanel {
     private static Date date;
 
     /** Поле сервиса для взаимодействия с базой данных*/
-    private static final TrainingService trainingService = TrainingServiceImpl.getService();
+    private static final TrainingService trainingService = new TrainingServiceImpl();
 
     /** Поле сервиса для взаимодействия с базой данных*/
-    private static final UserService userService = UserServiceImpl.getService();
+    private static final UserService userService = new UserServiceImpl();
 
     private UserPanel() {}
 
