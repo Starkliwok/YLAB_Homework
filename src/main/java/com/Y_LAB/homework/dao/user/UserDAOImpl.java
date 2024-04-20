@@ -56,8 +56,7 @@ public class UserDAOImpl implements UserDAO {
                     users.add(new User(id, username, password));
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return users;
     }
@@ -92,8 +91,7 @@ public class UserDAOImpl implements UserDAO {
                 throw new WrongUsernameAndPasswordException("Неверный логин или пароль, повторите попытку");
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return user;
     }
@@ -116,8 +114,7 @@ public class UserDAOImpl implements UserDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -138,8 +135,7 @@ public class UserDAOImpl implements UserDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -157,8 +153,7 @@ public class UserDAOImpl implements UserDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -174,8 +169,7 @@ public class UserDAOImpl implements UserDAO {
             statement.execute();
             return statement.getResultSet().next();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return false;
     }

@@ -61,8 +61,7 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
                 additionalDataList.add(additionalData);
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return additionalDataList;
     }
@@ -95,8 +94,7 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
                         , additionalDataResultSet.getLong(4));
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return additionalData;
     }
@@ -121,8 +119,7 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -143,8 +140,7 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -163,8 +159,7 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 }

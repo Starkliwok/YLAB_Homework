@@ -54,8 +54,7 @@ public class UserAuditDAOImpl implements UserAuditDAO {
                                         , userAuditResultSet.getString(5)));
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return userAudits;
     }
@@ -84,8 +83,7 @@ public class UserAuditDAOImpl implements UserAuditDAO {
                         , userAuditResultSet.getString(5));
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return userAudit;
     }
@@ -116,8 +114,7 @@ public class UserAuditDAOImpl implements UserAuditDAO {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 }

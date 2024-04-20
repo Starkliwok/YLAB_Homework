@@ -2,6 +2,7 @@ package com.Y_LAB.homework.dao.training;
 
 import com.Y_LAB.homework.Main;
 import com.Y_LAB.homework.entity.trainings.AdditionalData;
+import com.Y_LAB.homework.service.training.TrainingService;
 import com.Y_LAB.homework.service.training.TrainingServiceImpl;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,11 +38,12 @@ class AdditionalDataDAOImplTest {
 
     @Test
     public void getAllAdditionalData() throws SQLException {
+        TrainingService trainingService = new TrainingServiceImpl();
 
-        int actual = new TrainingServiceImpl().getTraining(2).getAdditionalDataMap().size();
+        int actual = trainingService.getTraining(2L).getAdditionalDataMap().size();
         additionalDataDAO.saveAdditionalData("Раз", "150", 2);
 
-        int expected = new TrainingServiceImpl().getTraining(2).getAdditionalDataMap().size();
+        int expected = trainingService.getTraining(2L).getAdditionalDataMap().size();
 
         assertThat(actual).isEqualTo(expected - 1);
         Statement statement = connection.createStatement();

@@ -18,7 +18,7 @@ import java.util.Map;
 public class TrainingDAOImpl implements TrainingDAO {
 
     /** Поле для подключения к базе данных*/
-    private final Connection connection = ConnectionToDatabase.getConnection();
+    private static Connection connection;
 
     /** Поле для получения объекта класса*/
     private static TrainingDAO trainingDAO;
@@ -30,6 +30,7 @@ public class TrainingDAOImpl implements TrainingDAO {
      * */
     public static TrainingDAO getInstance() {
         if(trainingDAO == null) {
+            connection = ConnectionToDatabase.getConnection();
             trainingDAO = new TrainingDAOImpl();
         }
         return trainingDAO;
@@ -64,8 +65,7 @@ public class TrainingDAOImpl implements TrainingDAO {
                     trainings.add(training);
                 }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return trainings;
     }
@@ -80,6 +80,7 @@ public class TrainingDAOImpl implements TrainingDAO {
         Training training = null;
         Map<String, String> additionalDataList = new HashMap<>();
         try {
+            connection = ConnectionToDatabase.getConnection();
             PreparedStatement preparedStatement =
                     connection.prepareStatement("SELECT * FROM training_diary.trainings WHERE id = ?");
             preparedStatement.setLong(1, id);
@@ -99,8 +100,7 @@ public class TrainingDAOImpl implements TrainingDAO {
                 setAdditionalData(training, additionalDataList);
             }
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
         return training;
     }
@@ -145,8 +145,7 @@ public class TrainingDAOImpl implements TrainingDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -168,8 +167,7 @@ public class TrainingDAOImpl implements TrainingDAO {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
     /**
@@ -201,8 +199,7 @@ public class TrainingDAOImpl implements TrainingDAO {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Произошла ошибка, приложение завершает работу");
-            System.exit(-1);
+            System.out.println("Произошла ошибка " + e.getMessage());
         }
     }
 }
