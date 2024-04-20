@@ -1,19 +1,23 @@
 package com.Y_LAB.homework.in.user_panel;
 
-import com.Y_LAB.homework.audit.UserAudit;
 import com.Y_LAB.homework.in.util.ConsoleReader;
 import com.Y_LAB.homework.roles.Admin;
-import com.Y_LAB.homework.roles.User;
+import com.Y_LAB.homework.entity.User;
+import com.Y_LAB.homework.service.user.UserService;
+import com.Y_LAB.homework.service.user.UserServiceImpl;
 
 /**
  * Класс для вывода панели администратора и взаимодействия с ней
  * @author Денис Попов
- * @version 1.0
+ * @version 2.0
  */
 public class AdminPanel {
 
     /** Поле администратора для взаимодействия с методами класса администратора.*/
     private static Admin admin;
+
+    /** Поле сервиса для взаимодействия с базой данных*/
+    private static final UserService userService = UserServiceImpl.getService();
 
     private AdminPanel() {}
 
@@ -38,7 +42,7 @@ public class AdminPanel {
      * Метод для выбора действия администратора <br>
      * 1 - {@link AdminPanel#showAllUsers()} Посмотреть список пользователей<br>
      * 2 - {@link UserPanel#printUserPage(User)} Получить возможности пользователя<br>
-     * 3 - {@link UserAudit#getLog()} Получить лог действий пользователей<br>
+     * 3 - {@link UserService#getAllUserAudits()} Получить лог действий пользователей<br>
      * 0 - {@link HomePanel#printStartPage()} Выход из Аккаунта<br>
      * любое другое значение выводит сообщение об ошибке и рекурсивно вызывает метод
      */
@@ -48,8 +52,10 @@ public class AdminPanel {
                 showAllUsers();
             case 2 ->
                 UserPanel.printUserPage(admin);
-            case 3 ->
-                System.out.println(UserAudit.getLog());
+            case 3 -> {
+                userService.getAllUserAudits().forEach(System.out::println);
+                printAdminPage(admin);
+            }
             case 0 ->
                 HomePanel.printStartPage();
             default -> {
@@ -66,7 +72,8 @@ public class AdminPanel {
      * любое другое значение выводит сообщение об ошибке и вызывает метод <br> {@link AdminPanel#printAdminPage(Admin)}
      */
     private static void showAllUsers() {
-        User.getUserSet().forEach(System.out::println);
+        userService.getAllUsers().forEach(System.out::println);
+
         System.out.println("""
                  \nВыберите действие:\s
                  1 - Выбрать пользователя для взаимодействия с его аккаунтом\s
@@ -96,7 +103,7 @@ public class AdminPanel {
     private static void chooseUserToInteract() {
         System.out.println("Введите id пользователя для взаимодействия или любое другое число для выхода");
         int id = ConsoleReader.enterIntValue();
-        User user = User.getUserSet().stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+        User user = userService.getAllUsers().stream().filter(p -> p.getId() == id).findFirst().orElse(null);
         if(user == null) {
             showAllUsers();
         } else if(user instanceof Admin && id != admin.getId()) {
@@ -110,12 +117,12 @@ public class AdminPanel {
      * Метод для выбора действия администратора с переданным пользователем <br>
      * 1 - используется для изменения логина пользователя, считывается новый логин, проверяется на наличие такого логина
      * у другого пользователя, в случае если логин не зарезервирован, то вызывается метод <br>
-     * {@link Admin#updateUserName(User, String)} для изменения логина, после изменения метод рекурсивно вызывается
+     * {@link UserService#updateUser(User)} для изменения логина, после изменения метод рекурсивно вызывается
      * для дальнейший действий с пользователем со стороны администратора <br>
      * 2 - используется для изменения пароля пользователя, считывается новый пароль вызывается метод <br>
-     * {@link Admin#updateUserPassword(User, String)} для изменения пароля, после изменения метод работает аналогично
+     * {@link UserService#updateUser(User)} для изменения пароля, после изменения метод работает аналогично
      * как и метод по изменению логина <br>
-     * 3 - вызывается метод {@link Admin#deleteUser(User)} в случае если указанный пользователь является
+     * 3 - вызывается метод {@link UserService#deleteUser(long)} в случае если указанный пользователь является
      * администратором, то удаляется его собственный аккаунт, почему так происходит описано в <br>
      * {@link AdminPanel#chooseUserToInteract()} в случае если пользователь не является администратором,
      * он так же удаляется <br>
@@ -137,10 +144,12 @@ public class AdminPanel {
             case 1 -> {
                 System.out.println("Введите новый логин");
                 String newName = ConsoleReader.enterStringValue(3);
-                if (User.getAllReservedUsernamesAndPasswords().containsKey(newName)) {
+                if (!userService.getAllUsers().stream().filter
+                        (user1 -> user1.getUsername().equals(newName)).toList().isEmpty()) {
                     System.out.println("Такой логин уже зарезервирован");
                 } else {
-                    admin.updateUserName(user, newName);
+                    user.setUsername(newName);
+                    userService.updateUser(user);
                     System.out.println("Вы успешно изменили логин пользователя");
                 }
                 chooseActionWithUser(user);
@@ -148,12 +157,13 @@ public class AdminPanel {
             case 2 -> {
                 System.out.println("Введите новый пароль");
                 String newPassword = ConsoleReader.enterStringValue(3);
-                admin.updateUserPassword(user, newPassword);
+                user.setPassword(newPassword);
+                userService.updateUser(user);
                 System.out.println("Вы успешно изменили пароль пользователя");
                 chooseActionWithUser(user);
             }
             case 3 -> {
-                admin.deleteUser(user);
+                userService.deleteUser(user.getId());
                 if (user instanceof Admin) {
                     System.out.println("Вы удалили свой аккаунт");
                     HomePanel.printStartPage();

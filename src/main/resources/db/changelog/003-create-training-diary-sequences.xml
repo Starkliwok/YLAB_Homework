@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="001-create-user-id-sequence" author="Denis" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="user_id_seq" schemaName="training_diary"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="user_id_seq" schemaName="training_diary"/>
+    </changeSet>
+
+    <changeSet id="002-create-training-id-sequence" author="Denis" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="training_id_seq" schemaName="training_diary"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="training_id_seq" schemaName="training_diary"/>
+    </changeSet>
+
+    <changeSet id="003-create-additional-data-id-sequence" author="Denis" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="additional_data_id_seq" schemaName="training_diary"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="additional_data_id_seq" schemaName="training_diary"/>
+    </changeSet>
+
+    <changeSet id="004-create-user-audit-id-sequence" author="Denis" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="user_audit_id_seq" schemaName="training_diary"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="user_audit_id_seq" schemaName="training_diary"/>
+    </changeSet>
+</databaseChangeLog>

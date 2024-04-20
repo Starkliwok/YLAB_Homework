@@ -1,11 +1,12 @@
 package com.Y_LAB.homework.in.util;
 
+import com.Y_LAB.homework.dao.user.UserDAO;
+import com.Y_LAB.homework.dao.user.UserDAOImpl;
 import com.Y_LAB.homework.exception.auth.PasswordFormatException;
 import com.Y_LAB.homework.exception.auth.PasswordsDoNotMatchException;
 import com.Y_LAB.homework.exception.auth.UserAlreadyExistsException;
 import com.Y_LAB.homework.exception.auth.UsernameFormatException;
 import com.Y_LAB.homework.exception.training.TrainingFieldMinimumLengthException;
-import com.Y_LAB.homework.roles.User;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 /**
  * Класс для считывания введённых данных пользователем
  * @author Денис Попов
- * @version 1.0
+ * @version 2.0
  */
 public class ConsoleReader {
 
@@ -122,10 +123,13 @@ public class ConsoleReader {
      * @return пользовательский ввод
      */
     public static String enterUsername() throws UsernameFormatException, UserAlreadyExistsException {
+        UserDAO userDAO = new UserDAOImpl();
+
         String username = scanner.next();
         if(username.length() < 2) {
             throw new UsernameFormatException("Минимальная длина имени - 2 символа, повторите попытку\n");
-        } else if(User.getUsernameSet().contains(username)) {
+        } else if(!userDAO.getAllUsers().stream().filter
+                (user1 -> user1.getUsername().equals(username)).toList().isEmpty()) {
             throw new UserAlreadyExistsException("Пользователь с таким именем уже существует, повторите попытку\n");
         }
         return username;

@@ -1,19 +1,21 @@
 package com.Y_LAB.homework.in.user_panel;
 
-import com.Y_LAB.homework.audit.UserAudit;
 import com.Y_LAB.homework.audit.UserAuditResult;
-import com.Y_LAB.homework.in.auth_panel.AuthorizationPanel;
-import com.Y_LAB.homework.in.auth_panel.RegistrationPanel;
+import com.Y_LAB.homework.in.user_panel.auth_panel.AuthorizationPanel;
+import com.Y_LAB.homework.in.user_panel.auth_panel.RegistrationPanel;
 import com.Y_LAB.homework.in.util.ConsoleReader;
-
-import java.time.LocalDateTime;
+import com.Y_LAB.homework.service.user.UserService;
+import com.Y_LAB.homework.service.user.UserServiceImpl;
 
 /**
  * Класс для вывода панели с авторизацией и регистрацией
  * @author Денис Попов
- * @version 1.0
+ * @version 2.0
  */
 public class HomePanel {
+
+    /** Поле сервиса для взаимодействия с базой данных*/
+    private static final UserService userService = UserServiceImpl.getService();
 
     private HomePanel() {}
 
@@ -45,7 +47,7 @@ public class HomePanel {
             case 2 ->
                 RegistrationPanel.signUp();
             case 0 -> {
-                UserAudit.addLog("exit", LocalDateTime.now(), "", UserAuditResult.SUCCESS);
+                userService.saveUserAudit(null, "Выход из приложения", UserAuditResult.SUCCESS);
                 System.exit(0);
             }
             default -> {
