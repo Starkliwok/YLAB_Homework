@@ -1,11 +1,8 @@
 package com.Y_LAB.homework.in.user_panel.auth_panel;
 
 import com.Y_LAB.homework.audit.UserAuditResult;
-import com.Y_LAB.homework.in.util.ConsoleReader;
-import com.Y_LAB.homework.exception.auth.PasswordFormatException;
-import com.Y_LAB.homework.exception.auth.PasswordsDoNotMatchException;
-import com.Y_LAB.homework.exception.auth.UserAlreadyExistsException;
-import com.Y_LAB.homework.exception.auth.UsernameFormatException;
+import com.Y_LAB.homework.exception.auth.*;
+import com.Y_LAB.homework.util.in.ConsoleReader;
 import com.Y_LAB.homework.in.user_panel.HomePanel;
 import com.Y_LAB.homework.service.user.UserService;
 import com.Y_LAB.homework.service.user.UserServiceImpl;
@@ -37,10 +34,11 @@ public class RegistrationPanel {
             username = ConsoleReader.enterUsername();
             String password = enterPasswordForRegistration();
             userService.saveUser(username, password);
-            userService.saveUserAudit(null, "Регистрация", UserAuditResult.SUCCESS);
+            userService.saveUserAudit(
+                    userService.getUser(username, password).getId(), "Регистрация", UserAuditResult.SUCCESS);
             System.out.println("\nВы успешно создали аккаунт");
             HomePanel.printStartPage();
-        } catch (UserAlreadyExistsException | UsernameFormatException ex) {
+        } catch (UserAlreadyExistsException | UsernameFormatException | WrongUsernameAndPasswordException ex) {
             System.out.println(ex.getMessage());
             signUp();
         }
@@ -64,7 +62,6 @@ public class RegistrationPanel {
             ConsoleReader.repeatPassword(password);
         } catch (PasswordsDoNotMatchException | PasswordFormatException ex) {
             System.out.println(ex.getMessage());
-            userService.saveUserAudit(null, "Регистрация", UserAuditResult.FAIL);
             return enterPasswordForRegistration();
         }
         return password;

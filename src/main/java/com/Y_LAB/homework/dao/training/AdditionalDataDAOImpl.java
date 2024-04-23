@@ -18,22 +18,16 @@ import java.util.List;
 public class AdditionalDataDAOImpl implements AdditionalDataDAO {
 
     /** Поле для подключения к базе данных*/
-    private final Connection connection = ConnectionToDatabase.getConnection();
+    private final Connection connection;
 
-    /** Поле для получения объекта класса*/
-    private static AdditionalDataDAO additionalDataDAO;
-
-    private AdditionalDataDAOImpl() {}
-
-    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
-     * @return объекта класса
-     * */
-    public static AdditionalDataDAO getInstance() {
-        if(additionalDataDAO == null) {
-            additionalDataDAO = new AdditionalDataDAOImpl();
-        }
-        return additionalDataDAO;
+    public AdditionalDataDAOImpl(Connection connection) {
+        this.connection = connection;
     }
+
+    public AdditionalDataDAOImpl() {
+        this.connection = ConnectionToDatabase.getConnection();
+    }
+
 
     /**
      * Метод для получения всей дополнительной информации тренировки из базы данных
@@ -108,8 +102,8 @@ public class AdditionalDataDAOImpl implements AdditionalDataDAO {
         try {
             PreparedStatement preparedStatement =
                     connection.prepareStatement(
-                            "INSERT INTO training_diary.additional_data " +
-                                    "VALUES (NEXTVAL('training_diary.additional_data_id_seq'), ?, ?, ?)");
+                            "INSERT INTO training_diary.additional_data (name, value, training_id)" +
+                                    "VALUES (?, ?, ?)");
 
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, value);

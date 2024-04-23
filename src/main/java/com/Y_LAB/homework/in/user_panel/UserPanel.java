@@ -2,7 +2,7 @@ package com.Y_LAB.homework.in.user_panel;
 
 import com.Y_LAB.homework.audit.UserAuditResult;
 import com.Y_LAB.homework.entity.trainings.AdditionalData;
-import com.Y_LAB.homework.in.util.ConsoleReader;
+import com.Y_LAB.homework.util.in.ConsoleReader;
 import com.Y_LAB.homework.roles.Admin;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.entity.trainings.Training;
@@ -159,18 +159,11 @@ public class UserPanel {
 
     /**
      * Метод считывает ввод пользователя - дату тренировки, вызывает <br>{@link TrainingPanel#enterTraining(User, Date)}
-     * для создания объекта тренировки и его получение, после чего добавляет тренировку в дневник<br>
-     * {@link TrainingService#saveTraining(Training)}, в случае успешного добавления выводит информацию об этом,
      * после чего переводит пользователя на домашнюю панель пользователя
      */
     private static void AddTraining() {
         date = ConsoleReader.enterDate();
-        Training training = TrainingPanel.enterTraining(user, date);
-
-        trainingService.saveTraining(training);
-
-        System.out.println("Тренировка успешно добавлена\n");
-        userService.saveUserAudit(user.getId(), "Добавление тренировки", UserAuditResult.SUCCESS);
+        TrainingPanel.enterTraining(user, date);
         printUserPage(user);
     }
 

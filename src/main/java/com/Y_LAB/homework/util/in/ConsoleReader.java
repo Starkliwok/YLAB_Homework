@@ -1,7 +1,5 @@
-package com.Y_LAB.homework.in.util;
+package com.Y_LAB.homework.util.in;
 
-import com.Y_LAB.homework.dao.user.UserDAO;
-import com.Y_LAB.homework.dao.user.UserDAOImpl;
 import com.Y_LAB.homework.exception.auth.PasswordFormatException;
 import com.Y_LAB.homework.exception.auth.PasswordsDoNotMatchException;
 import com.Y_LAB.homework.exception.auth.UserAlreadyExistsException;
@@ -130,8 +128,8 @@ public class ConsoleReader {
         String username = scanner.next();
         if(username.length() < 2) {
             throw new UsernameFormatException("Минимальная длина имени - 2 символа, повторите попытку\n");
-        } else if(!userService.getAllUsers().stream().filter
-                (user1 -> user1.getUsername().equals(username)).toList().isEmpty()) {
+
+        } else if(userService.isUserExist(username)) {
             throw new UserAlreadyExistsException("Пользователь с таким именем уже существует, повторите попытку\n");
         }
         return username;

@@ -1,44 +1,52 @@
 package com.Y_LAB.homework.dao.training;
 
-import com.Y_LAB.homework.Main;
 import com.Y_LAB.homework.entity.trainings.AdditionalData;
-import com.Y_LAB.homework.service.training.TrainingService;
-import com.Y_LAB.homework.service.training.TrainingServiceImpl;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
+import com.Y_LAB.homework.util.init.LiquibaseConfig;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Testcontainers
 class AdditionalDataDAOImplTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
-    private Connection connection;
+    private static final PostgreSQLContainer<?> postgresContainer =
+            new PostgreSQLContainer<>("postgres:latest")
+                    .withExposedPorts(5433, 5432)
+                    .withUsername("postgres")
+                    .withPassword("starkliw")
+                    .withDatabaseName("postgres");
+    private static Connection connection;
 
-    private final AdditionalDataDAO additionalDataDAO = AdditionalDataDAOImpl.getInstance();
+    private static AdditionalDataDAO additionalDataDAO;
 
     @BeforeAll
-    public static void setUp() {
-        Main.initApplication();
-        postgresContainer.start();
-    }
+    static void beforeAll() throws SQLException {
+        Properties properties = new Properties();
+        properties.setProperty("url", postgresContainer.getJdbcUrl());
+        properties.setProperty("username", postgresContainer.getUsername());
+        properties.setProperty("password", postgresContainer.getPassword());
 
-    @BeforeEach
-    public void connectToDatabase() {
-        connection = ConnectionToDatabase.getConnection();
+        LiquibaseConfig.initMigration(ConnectionToDatabase.getConnectionFromProperties(properties));
+        connection = ConnectionToDatabase.getConnectionFromProperties(properties);
+        connection.setAutoCommit(false);
+        additionalDataDAO = new AdditionalDataDAOImpl(connection);
     }
 
     @Test
-    public void getAllAdditionalData() throws SQLException {
-        TrainingService trainingService = new TrainingServiceImpl();
+    @DisplayName("Проверка на увеличение общего количества дополнительной информации при добавлении новой записи")
+    public void getAllAdditionalData() {
+        TrainingDAO trainingService = new TrainingDAOImpl(connection);
 
         int actual = trainingService.getTraining(2L).getAdditionalDataMap().size();
         additionalDataDAO.saveAdditionalData("Раз", "150", 2);
@@ -46,46 +54,48 @@ class AdditionalDataDAOImplTest {
         int expected = trainingService.getTraining(2L).getAdditionalDataMap().size();
 
         assertThat(actual).isEqualTo(expected - 1);
-        Statement statement = connection.createStatement();
-        statement.execute("DELETE FROM training_diary.additional_data WHERE " +
-                "name = 'Раз' AND value = '150' AND training_id = 2");
     }
+
     @Test
-    public void getAdditionalData(){
+    @DisplayName("Получение дополнительной информации из бд")
+    public void getAdditionalData() {
         AdditionalData additionalData = additionalDataDAO.getAdditionalData("Количество", "30", 1);
 
         assertThat(additionalData.getId()).isEqualTo(1);
     }
 
     @Test
-    public void saveAdditionalData(){
+    @DisplayName("Сохранение дополнительной информации и проверка на наличие новой записи в бд")
+    public void saveAdditionalData() {
         additionalDataDAO.saveAdditionalData("Скорость", "100", 5);
 
         AdditionalData additionalData = additionalDataDAO.getAdditionalData("Скорость", "100", 5);
 
-        assertThat(additionalData).isNotNull();
+        assertThat(additionalData.getName()).isEqualTo("Скорость");
+        assertThat(additionalData.getValue()).isEqualTo("100");
+        assertThat(additionalData.getTrainingId()).isEqualTo(5);
     }
 
     @Test
-    public void updateAdditionalData(){
+    @DisplayName("Обновление дополнительной информации и проверка на наличие обновлённой записи в бд")
+    public void updateAdditionalData() {
         AdditionalData additionalData = additionalDataDAO.getAdditionalData("Количество", "50", 3);
         additionalData.setValue("100");
 
         additionalDataDAO.updateAdditionalData(additionalData);
 
         assertThat(additionalData).isEqualTo(additionalDataDAO.getAdditionalData("Количество", "100", 3));
-        additionalData.setValue("50");
-        additionalDataDAO.updateAdditionalData(additionalData);
     }
 
     @Test
-    public void deleteAdditionalData(){
+    @DisplayName("Удаление дополнительной информации и проверка на отсутствие записи в бд")
+    public void deleteAdditionalData() throws SQLException {
         additionalDataDAO.saveAdditionalData("Kol", "1000", 5);
         AdditionalData additionalData = additionalDataDAO.getAdditionalData("Kol", "1000", 5);
 
         additionalDataDAO.deleteAdditionalData(additionalData.getId());
+        connection.commit();
 
         assertThat(additionalDataDAO.getAdditionalData("Kol", "1000", 5)).isNull();
     }
-
 }

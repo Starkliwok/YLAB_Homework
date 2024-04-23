@@ -27,7 +27,7 @@ public interface UserAuditDAO {
     UserAudit getUserAudit(long id);
 
     /**
-     * Метод для получения аудита пользователя из базы данных
+     * Метод для сохранения аудита пользователя в базу данных
      * @param userId идентификационный номер пользователя
      * @param action действия пользователя
      * @param userAuditResult результат действий пользователя

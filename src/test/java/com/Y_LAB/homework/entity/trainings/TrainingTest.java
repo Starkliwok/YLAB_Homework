@@ -1,6 +1,7 @@
 package com.Y_LAB.homework.entity.trainings;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -33,6 +34,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение имени тренировки")
     void getName() {
         Training training1 = new Training();
 
@@ -42,6 +44,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение значения имени тренировки и проверка на обновление имени")
     void setName() {
         assertThat("name").isEqualTo(training.getName());
         training.setName("new name");
@@ -50,6 +53,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение количества потраченных калорий во время тренировки")
     void getCaloriesSpent() {
         Training training1 = new Training();
         training1.setCaloriesSpent(150);
@@ -58,6 +62,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение количества потраченных калорий и проверка на обновление информации")
     void setCaloriesSpent() {
         assertThat(1500).isEqualTo(training.getCaloriesSpent());
         training.setCaloriesSpent(2000);
@@ -66,6 +71,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение длительности времени тренировки")
     void getDurationInMinutes() {
         Training training1 = new Training();
         training1.setDurationInMinutes(100.0);
@@ -74,6 +80,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение длительности времени тренировки и проверка на обновление информации")
     void setDurationInMinutes() {
         assertThat(100.0).isEqualTo(training.getDurationInMinutes());
         training.setDurationInMinutes(200);
@@ -82,6 +89,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение дополнительной информации тренировки")
     void getAdditionalDataMap() {
         Training training1 = new Training();
         additionalData.put("some key", "some value");
@@ -92,6 +100,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение дополнительной информации тренировки и проверка на обновление информации")
     void setAdditionalDataMap() {
         Map<String, String> expected = new HashMap<>();
         expected.put("key", "value");
@@ -103,6 +112,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение типа тренировки")
     void getType() {
         Training training1 = new Training();
         training1.setType("Cardio");
@@ -111,6 +121,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение типа тренировки и проверка на обновление информации")
     void setType() {
         assertThat("bla").isEqualTo(training.getType());
         training.setType("ne bla");
@@ -119,6 +130,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение идентификационного номера тренировки")
     void getId() {
         Training training1 = new Training(1L, "some", "name", new Date(1220227200),
                 0, 1, 0);
@@ -127,6 +139,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение даты тренировки")
     void getDate() {
         Training training1 = new Training();
         training1.setDate(new Date(1220227200));
@@ -135,6 +148,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение даты тренировки и проверка на обновление информации")
     void setDate() {
         assertThat(new Date(1220227200)).isEqualTo(training.getDate());
         training.setDate(new Date(1220327200));
@@ -143,6 +157,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Получение идентификационного номера владельца тренировки")
     void getUserId() {
         Training training1 = new Training();
         training1.setUserId(100);
@@ -151,6 +166,7 @@ class TrainingTest {
     }
 
     @Test
+    @DisplayName("Изменение идентификационного номера владельца тренировки и проверка на обновление информации")
     void setUserId() {
         assertThat(10).isEqualTo(training.getUserId());
         training.setUserId(12);

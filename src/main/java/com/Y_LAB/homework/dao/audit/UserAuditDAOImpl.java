@@ -17,21 +17,15 @@ import java.util.List;
 public class UserAuditDAOImpl implements UserAuditDAO {
 
     /** Поле для подключения к базе данных*/
-    private final Connection connection = ConnectionToDatabase.getConnection();
+    private final Connection connection;
 
-    /** Поле для получения объекта класса*/
-    private static UserAuditDAO userAuditDAO;
 
-    private UserAuditDAOImpl() {}
+    public UserAuditDAOImpl(Connection connection) {
+        this.connection = connection;
+    }
 
-    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
-     * @return объекта класса
-     * */
-    public static UserAuditDAO getInstance() {
-        if(userAuditDAO == null) {
-            userAuditDAO = new UserAuditDAOImpl();
-        }
-        return userAuditDAO;
+    public UserAuditDAOImpl() {
+        this.connection = ConnectionToDatabase.getConnection();
     }
 
     /**
@@ -88,7 +82,7 @@ public class UserAuditDAOImpl implements UserAuditDAO {
     }
 
     /**
-     * Метод для получения аудита пользователя из базы данных
+     * Метод для сохранения аудита пользователя из базу данных
      * @param userId идентификационный номер пользователя
      * @param action действия пользователя
      * @param userAuditResult результат действий пользователя
@@ -98,8 +92,8 @@ public class UserAuditDAOImpl implements UserAuditDAO {
         try {
             PreparedStatement preparedStatement =
                     connection.prepareStatement(
-                            "INSERT INTO training_diary.user_audit " +
-                            "VALUES (NEXTVAL('training_diary.user_audit_id_seq'), ?, ?, ?, ?)");
+                            "INSERT INTO training_diary.user_audit (date, user_id, action, result) " +
+                            "VALUES (?, ?, ?, ?)");
 
             preparedStatement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             if (userId == null) {

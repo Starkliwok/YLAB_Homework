@@ -29,6 +29,13 @@ public interface UserDAO {
     User getUser(String username, String password) throws WrongUsernameAndPasswordException;
 
     /**
+     * Метод для проверки существования пользователя по логину в базе данных
+     * @param username логин пользователя
+     * @return True - пользователь с таким логином существует. False - пользователя с таким логином не существует
+     */
+    boolean isUserExist(String username);
+
+    /**
      * Метод для сохранения пользователя в базу данных
      * @param username логин пользователя
      * @param password пароль пользователя

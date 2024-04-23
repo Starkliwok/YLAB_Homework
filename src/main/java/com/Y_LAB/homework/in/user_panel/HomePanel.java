@@ -1,11 +1,8 @@
 package com.Y_LAB.homework.in.user_panel;
 
-import com.Y_LAB.homework.audit.UserAuditResult;
 import com.Y_LAB.homework.in.user_panel.auth_panel.AuthorizationPanel;
 import com.Y_LAB.homework.in.user_panel.auth_panel.RegistrationPanel;
-import com.Y_LAB.homework.in.util.ConsoleReader;
-import com.Y_LAB.homework.service.user.UserService;
-import com.Y_LAB.homework.service.user.UserServiceImpl;
+import com.Y_LAB.homework.util.in.ConsoleReader;
 
 /**
  * Класс для вывода панели с авторизацией и регистрацией
@@ -13,9 +10,6 @@ import com.Y_LAB.homework.service.user.UserServiceImpl;
  * @version 2.0
  */
 public class HomePanel {
-
-    /** Поле сервиса для взаимодействия с базой данных*/
-    private static final UserService userService = new UserServiceImpl();
 
     private HomePanel() {}
 
@@ -46,10 +40,8 @@ public class HomePanel {
                 AuthorizationPanel.logOn();
             case 2 ->
                 RegistrationPanel.signUp();
-            case 0 -> {
-                userService.saveUserAudit(null, "Выход из приложения", UserAuditResult.SUCCESS);
+            case 0 ->
                 System.exit(0);
-            }
             default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
                 startPageChooseAction();

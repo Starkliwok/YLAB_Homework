@@ -1,5 +1,6 @@
 package com.Y_LAB.homework.util.init;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -9,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PropertiesLoaderTest {
 
     @Test
+    @DisplayName("Получение файла .properties по пути к файлу, проверка содержимых данных в этом файле")
     void getProperties() {
         Properties properties = PropertiesLoader.getProperties("src/main/resources/application.properties");
 

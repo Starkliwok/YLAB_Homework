@@ -4,7 +4,7 @@ import com.Y_LAB.homework.dao.user.UserDAO;
 import com.Y_LAB.homework.audit.UserAuditResult;
 import com.Y_LAB.homework.in.user_panel.AdminPanel;
 import com.Y_LAB.homework.in.user_panel.HomePanel;
-import com.Y_LAB.homework.in.util.ConsoleReader;
+import com.Y_LAB.homework.util.in.ConsoleReader;
 import com.Y_LAB.homework.roles.Admin;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.exception.auth.WrongUsernameAndPasswordException;
@@ -53,7 +53,6 @@ public class AuthorizationPanel {
             }
         } catch (WrongUsernameAndPasswordException e) {
             System.out.println(e.getMessage());
-            userService.saveUserAudit(null, "Авторизация", UserAuditResult.FAIL);
             HomePanel.printStartPage();
         }
     }

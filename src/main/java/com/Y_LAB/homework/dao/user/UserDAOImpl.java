@@ -17,21 +17,14 @@ import java.util.List;
 public class UserDAOImpl implements UserDAO {
 
     /** Поле для подключения к базе данных*/
-    private final Connection connection = ConnectionToDatabase.getConnection();
+    private final Connection connection;
 
-    /** Поле для получения объекта класса*/
-    private static UserDAO userDAO;
+    public UserDAOImpl(Connection connection) {
+        this.connection = connection;
+    }
 
-    private UserDAOImpl() {}
-
-    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
-     * @return объекта класса
-     * */
-    public static UserDAO getInstance() {
-        if(userDAO == null) {
-            userDAO = new UserDAOImpl();
-        }
-        return userDAO;
+    public UserDAOImpl() {
+        this.connection = ConnectionToDatabase.getConnection();
     }
 
     /**
@@ -75,9 +68,7 @@ public class UserDAOImpl implements UserDAO {
             statement.setString(1, username);
             statement.setString(2, password);
             statement.execute();
-
             ResultSet userResultSet = statement.getResultSet();
-
             if(userResultSet.next()) {
                 long id = userResultSet.getLong(1);
                 if(isUserHasRoot(id))
@@ -95,6 +86,28 @@ public class UserDAOImpl implements UserDAO {
     }
 
     /**
+     * Метод для проверки существования пользователя по логину в базе данных
+     * @param username логин пользователя
+     * @return True - пользователь с таким логином существует. False - пользователя с таким логином не существует
+     */
+    @Override
+    public boolean isUserExist(String username) {
+        try {
+            PreparedStatement statement =
+                    connection.prepareStatement("SELECT * FROM training_diary.users WHERE name = ?");
+            statement.setString(1, username);
+            statement.execute();
+            ResultSet userResultSet = statement.getResultSet();
+            if(userResultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println("Произошла ошибка " + e.getMessage());
+        }
+        return false;
+    }
+
+    /**
      * Метод для сохранения пользователя в базу данных
      * @param username логин пользователя
      * @param password пароль пользователя
@@ -103,9 +116,7 @@ public class UserDAOImpl implements UserDAO {
     public void saveUser(String username, String password) {
         try {
             PreparedStatement preparedStatement =
-                    connection.prepareStatement(
-                            "INSERT INTO training_diary.users " +
-                                    "VALUES (NEXTVAL('training_diary.user_id_seq'), ?, ?)");
+                    connection.prepareStatement("INSERT INTO training_diary.users (name, password) VALUES (?, ?)");
 
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);

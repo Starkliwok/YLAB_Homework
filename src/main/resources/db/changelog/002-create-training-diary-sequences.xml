@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="002-create-training-diary-sequences" author="Denis" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="user_id_seq" schemaName="training_diary"/>
+                <sequenceExists sequenceName="admin_id_seq" schemaName="training_diary"/>
+                <sequenceExists sequenceName="training_id_seq" schemaName="training_diary"/>
+                <sequenceExists sequenceName="additional_data_id_seq" schemaName="training_diary"/>
+                <sequenceExists sequenceName="user_audit_id_seq" schemaName="training_diary"/>
+
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="user_id_seq" schemaName="training_diary"/>
+        <createSequence sequenceName="admin_id_seq" schemaName="training_diary"/>
+        <createSequence sequenceName="training_id_seq" schemaName="training_diary"/>
+        <createSequence sequenceName="additional_data_id_seq" schemaName="training_diary"/>
+        <createSequence sequenceName="user_audit_id_seq" schemaName="training_diary"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,13 +1,14 @@
 package com.Y_LAB.homework.dao.training;
 
-import com.Y_LAB.homework.Main;
 import com.Y_LAB.homework.entity.trainings.Training;
 import com.Y_LAB.homework.util.db.ConnectionToDatabase;
+import com.Y_LAB.homework.util.init.LiquibaseConfig;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,29 +16,39 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Testcontainers
 class TrainingDAOImplTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
-    private Connection connection;
+    private static final PostgreSQLContainer<?> postgresContainer =
+            new PostgreSQLContainer<>("postgres:latest")
+                    .withExposedPorts(5433, 5432)
+                    .withUsername("postgres")
+                    .withPassword("starkliw")
+                    .withDatabaseName("postgres");
+    private static Connection connection;
 
-    private final TrainingDAO trainingDAO = TrainingDAOImpl.getInstance();
+    private static TrainingDAO trainingDAO;
 
     @BeforeAll
-    public static void setUp() {
-        Main.initApplication();
-        postgresContainer.start();
-    }
+    static void beforeAll() throws SQLException {
+        Properties properties = new Properties();
+        properties.setProperty("url", postgresContainer.getJdbcUrl());
+        properties.setProperty("username", postgresContainer.getUsername());
+        properties.setProperty("password", postgresContainer.getPassword());
 
-    @BeforeEach
-    public void connectToDatabase() {
-        connection = ConnectionToDatabase.getConnection();
+        LiquibaseConfig.initMigration(ConnectionToDatabase.getConnectionFromProperties(properties));
+        connection = ConnectionToDatabase.getConnectionFromProperties(properties);
+        connection.setAutoCommit(false);
+        trainingDAO = new TrainingDAOImpl(connection);
     }
 
     @Test
+    @DisplayName("Проверка на увеличение общего количества тренировок при добавлении новой записи")
     public void getAllTrainings(){
         int size = trainingDAO.getAllTrainings(4).size();
         trainingDAO.saveTraining(new Training(100, "some", "sa", new Date(1220227200),
@@ -49,6 +60,7 @@ class TrainingDAOImplTest {
     }
 
     @Test
+    @DisplayName("Получение тренировки из бд")
     public void getTraining(){
         Training training = trainingDAO.getTraining(1);
 
@@ -57,6 +69,7 @@ class TrainingDAOImplTest {
     }
 
     @Test
+    @DisplayName("Сохранение тренировки и проверка на наличие новой записи в бд")
     public void saveTraining() throws SQLException {
         Training actual = new Training();
         actual.setName("some ");
@@ -77,24 +90,22 @@ class TrainingDAOImplTest {
         expected.setUserId(rs.getLong(7));
 
         assertThat(actual).isEqualTo(expected);
-        trainingDAO.deleteTraining(rs.getLong(1));
     }
 
     @Test
+    @DisplayName("Обновление тренировки и проверка на обновление записи в бд")
     public void updateTraining(){
         Training actual = trainingDAO.getTraining(1);
-        String type = actual.getType();
         actual.setType("some type");
 
         trainingDAO.updateTraining(actual);
         Training expected = trainingDAO.getTraining(1);
 
         assertThat(actual).isEqualTo(expected);
-        actual.setType(type);
-        trainingDAO.updateTraining(actual);
     }
 
     @Test
+    @DisplayName("Удаление тренировки и проверка на отсутствие записи в бд")
     public void deleteTraining() throws SQLException {
         Training actual = new Training();
         actual.setName("some ");
@@ -119,5 +130,27 @@ class TrainingDAOImplTest {
         trainingDAO.deleteTraining(id);
         expected = trainingDAO.getTraining(id);
         assertThat(expected).isNull();
+    }
+
+    @Test
+    @DisplayName("Получение тренировки из бд")
+    void getTrainingId() throws SQLException {
+        Training test = new Training();
+        test.setName("test ");
+        test.setType("test");
+        test.setDate(new Date(1220227200));
+        test.setUserId(5);
+
+        trainingDAO.saveTraining(test);
+        Statement statement = connection.createStatement();
+        statement.execute("SELECT id FROM training_diary.trainings WHERE " +
+                "name = 'test ' AND type = 'test' AND calories_spent = 0 AND duration_in_minutes = 0 AND user_id = 5");
+        ResultSet rs = statement.getResultSet();
+        rs.next();
+        long expected = rs.getLong(1);
+        long actual = trainingDAO.getTrainingId("test ", "test",
+                new Date(1220227200), 0, 0, 5);
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

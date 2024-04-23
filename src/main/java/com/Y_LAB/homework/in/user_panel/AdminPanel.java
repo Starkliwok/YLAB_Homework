@@ -1,6 +1,6 @@
 package com.Y_LAB.homework.in.user_panel;
 
-import com.Y_LAB.homework.in.util.ConsoleReader;
+import com.Y_LAB.homework.util.in.ConsoleReader;
 import com.Y_LAB.homework.roles.Admin;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.service.user.UserService;

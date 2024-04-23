@@ -8,6 +8,7 @@ import com.Y_LAB.homework.dao.user.UserDAOImpl;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.entity.UserAudit;
 import com.Y_LAB.homework.exception.auth.WrongUsernameAndPasswordException;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
  * @author Денис Попов
  * @version 1.0
  */
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     /** Поле для взаимодействия с пользователями в базе данных*/
@@ -28,8 +30,8 @@ public class UserServiceImpl implements UserService {
     private final UserAuditDAO userAuditDAO;
 
     public UserServiceImpl() {
-        userDAO = UserDAOImpl.getInstance();
-        userAuditDAO = UserAuditDAOImpl.getInstance();
+        userDAO = new UserDAOImpl();
+        userAuditDAO = new UserAuditDAOImpl();
     }
 
     /**
@@ -101,8 +103,18 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Метод вызывает {@link UserAuditDAO#saveUserAudit(Long, String, UserAuditResult)} для получения аудита
-     * пользователя из базы данных
+     * Метод для проверки существования пользователя по логину в базе данных
+     * @param username логин пользователя
+     * @return True - пользователь с таким логином существует. False - пользователя с таким логином не существует
+     */
+    @Override
+    public boolean isUserExist(String username) {
+        return userDAO.isUserExist(username);
+    }
+
+    /**
+     * Метод вызывает {@link UserAuditDAO#saveUserAudit(Long, String, UserAuditResult)} для сохранения аудита
+     * пользователя из базу данных
      * @param userId идентификационный номер пользователя
      * @param action действия пользователя
      * @param userAuditResult результат действий пользователя

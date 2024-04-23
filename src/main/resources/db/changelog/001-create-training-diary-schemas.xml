@@ -5,7 +5,7 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
 
-    <changeSet id="001-create-training-diary-schema-table" author="Denis" runAlways="true">
+    <changeSet id="001-create-training-diary-schemas" author="Denis" runAlways="true">
         <sql dbms="postgresql" endDelimiter=";">
             CREATE SCHEMA IF NOT EXISTS training_diary
         </sql>

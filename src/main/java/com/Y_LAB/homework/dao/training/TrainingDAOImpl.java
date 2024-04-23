@@ -18,22 +18,14 @@ import java.util.Map;
 public class TrainingDAOImpl implements TrainingDAO {
 
     /** Поле для подключения к базе данных*/
-    private static Connection connection;
+    private final Connection connection;
 
-    /** Поле для получения объекта класса*/
-    private static TrainingDAO trainingDAO;
+    public TrainingDAOImpl(Connection connection) {
+        this.connection = connection;
+    }
 
-    private TrainingDAOImpl() {}
-
-    /** Метод для получения объекта класса в случае если объекта не существует, то создается новый объект
-     * @return объекта класса
-     * */
-    public static TrainingDAO getInstance() {
-        if(trainingDAO == null) {
-            connection = ConnectionToDatabase.getConnection();
-            trainingDAO = new TrainingDAOImpl();
-        }
-        return trainingDAO;
+    public TrainingDAOImpl() {
+        this.connection = ConnectionToDatabase.getConnection();
     }
 
     /**
@@ -80,7 +72,6 @@ public class TrainingDAOImpl implements TrainingDAO {
         Training training = null;
         Map<String, String> additionalDataList = new HashMap<>();
         try {
-            connection = ConnectionToDatabase.getConnection();
             PreparedStatement preparedStatement =
                     connection.prepareStatement("SELECT * FROM training_diary.trainings WHERE id = ?");
             preparedStatement.setLong(1, id);
@@ -103,6 +94,43 @@ public class TrainingDAOImpl implements TrainingDAO {
             System.out.println("Произошла ошибка " + e.getMessage());
         }
         return training;
+    }
+
+    /**
+     * Метод для получения идентификационного номера тренировки из базы данных
+     * @param name имя тренировки
+     * @param type тип тренировки
+     * @param date дата тренировки
+     * @param caloriesSpent количество потраченных калорий
+     * @param durationInMinutes длительность тренировки в минутах
+     * @param userId идентификационный номер владельца тренировки
+     * @return Тренировка
+     */
+    @Override
+    public long getTrainingId(String name, String type, java.util.Date date, int caloriesSpent,
+                              double durationInMinutes, long userId) {
+        long result = 0;
+        try {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT id FROM training_diary.trainings WHERE name = ? AND " +
+                            "type = ? AND date = ? AND calories_spent = ? AND duration_in_minutes = ? AND user_id = ?");
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, type);
+            preparedStatement.setDate(3, new java.sql.Date(date.getTime()));
+            preparedStatement.setInt(4, caloriesSpent);
+            preparedStatement.setDouble(5, durationInMinutes);
+            preparedStatement.setLong(6, userId);
+
+            preparedStatement.execute();
+            ResultSet trainingIdResultSet = preparedStatement.getResultSet();
+
+            if(trainingIdResultSet.next()) {
+                result = trainingIdResultSet.getLong(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Произошла ошибка " + e.getMessage());
+        }
+        return result;
     }
 
     /**
@@ -138,7 +166,7 @@ public class TrainingDAOImpl implements TrainingDAO {
             PreparedStatement preparedStatement =
                     connection.prepareStatement(
                             "INSERT INTO training_diary.trainings " +
-                                    "VALUES (NEXTVAL('training_diary.training_id_seq'), ?, ?, ?, ?, ?, ?)");
+                            "(name, type, date, calories_spent, duration_in_minutes, user_id) VALUES (?, ?, ?, ?, ?, ?)");
 
             insertTrainingDataToPreparedStatement(training, preparedStatement);
             preparedStatement.setLong(6, training.getUserId());

@@ -6,7 +6,9 @@ import com.Y_LAB.homework.dao.training.TrainingDAO;
 import com.Y_LAB.homework.dao.training.TrainingDAOImpl;
 import com.Y_LAB.homework.entity.trainings.AdditionalData;
 import com.Y_LAB.homework.entity.trainings.Training;
+import lombok.AllArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
  * @author Денис Попов
  * @version 1.0
  */
+@AllArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
 
     /** Поле для взаимодействия с дополнительной информацией тренировок в базе данных*/
@@ -25,8 +28,8 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingDAO trainingDAO;
 
     public TrainingServiceImpl() {
-        additionalDataDAO = AdditionalDataDAOImpl.getInstance();
-        trainingDAO = TrainingDAOImpl.getInstance();
+        additionalDataDAO = new AdditionalDataDAOImpl();
+        trainingDAO = new TrainingDAOImpl();
     }
 
     /**
@@ -104,6 +107,22 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public Training getTraining(long id) {
         return trainingDAO.getTraining(id);
+    }
+
+    /**
+     * Метод для получения идентификационного номера тренировки из базы данных
+     * @param name имя тренировки
+     * @param type тип тренировки
+     * @param date дата тренировки
+     * @param caloriesSpent количество потраченных калорий
+     * @param durationInMinutes длительность тренировки в минутах
+     * @param userId идентификационный номер владельца тренировки
+     * @return Тренировка
+     */
+    @Override
+    public long getTrainingId(String name, String type, Date date, int caloriesSpent, double durationInMinutes,
+                              long userId) {
+        return trainingDAO.getTrainingId(name, type, date, caloriesSpent, durationInMinutes, userId);
     }
 
     /**

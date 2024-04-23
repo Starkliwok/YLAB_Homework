@@ -3,6 +3,7 @@ package com.Y_LAB.homework.dao.training;
 
 import com.Y_LAB.homework.entity.trainings.Training;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +26,18 @@ public interface TrainingDAO {
      * @return Тренировка
      */
     Training getTraining(long id);
+
+    /**
+     * Метод для получения идентификационного номера тренировки из базы данных
+     * @param name имя тренировки
+     * @param type тип тренировки
+     * @param date дата тренировки
+     * @param caloriesSpent количество потраченных калорий
+     * @param durationInMinutes длительность тренировки в минутах
+     * @param userId идентификационный номер владельца тренировки
+     * @return Тренировка
+     */
+    long getTrainingId(String name, String type, Date date, int caloriesSpent, double durationInMinutes, long userId);
 
     /**
      * Метод для сохранения тренировки в базу данных

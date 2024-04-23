@@ -1,7 +1,7 @@
 package com.Y_LAB.homework.in.user_panel;
 
 import com.Y_LAB.homework.audit.UserAuditResult;
-import com.Y_LAB.homework.in.util.ConsoleReader;
+import com.Y_LAB.homework.util.in.ConsoleReader;
 import com.Y_LAB.homework.entity.User;
 import com.Y_LAB.homework.entity.trainings.Training;
 import com.Y_LAB.homework.service.training.TrainingService;
@@ -37,10 +37,9 @@ public class TrainingPanel {
      * пользователь хотел бы указать.
      * @param user владелец дневника тренировок
      * @param date дата тренировки
-     * @return возвращает тренировку с заполненными полями, если она в прошедшем времени, если в будущем, то поля
      * заполняются частично
      */
-    public static Training enterTraining(User user, Date date) {
+    public static void enterTraining(User user, Date date) {
         boolean isPlanned = date.after(new Date(System.currentTimeMillis()));
         if(isPlanned) {
             System.out.println("Тренировка будет добавлена в качестве запланированной" +
@@ -58,9 +57,14 @@ public class TrainingPanel {
             System.out.print("Введите длительность тренировки в минутах: ");
             training.setDurationInMinutes(ConsoleReader.enterDoubleValue());
         }
+        trainingService.saveTraining(training);
+        long trainingId = trainingService.getTrainingId(training.getName(), training.getType(), date,
+                training.getCaloriesSpent(), training.getDurationInMinutes(), user.getId());
+        training.setId(trainingId);
         chooseToAddAdditionalDataToTraining(user, training);
 
-        return training;
+        System.out.println("Тренировка успешно добавлена\n");
+        userService.saveUserAudit(user.getId(), "Добавление тренировки", UserAuditResult.SUCCESS);
     }
 
     /**
