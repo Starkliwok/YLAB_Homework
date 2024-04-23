@@ -1,22 +1,29 @@
 package com.Y_LAB.homework.in.user_panel;
 
-import com.Y_LAB.homework.audit.UserAudit;
 import com.Y_LAB.homework.audit.UserAuditResult;
-import com.Y_LAB.homework.in.util.ConsoleReader;
-import com.Y_LAB.homework.roles.User;
-import com.Y_LAB.homework.trainings.AdditionalData;
-import com.Y_LAB.homework.trainings.Training;
+import com.Y_LAB.homework.util.in.ConsoleReader;
+import com.Y_LAB.homework.entity.User;
+import com.Y_LAB.homework.entity.trainings.Training;
+import com.Y_LAB.homework.service.training.TrainingService;
+import com.Y_LAB.homework.service.training.TrainingServiceImpl;
+import com.Y_LAB.homework.service.user.UserService;
+import com.Y_LAB.homework.service.user.UserServiceImpl;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Класс для вывода панели дневника тренировок
  * @author Денис Попов
- * @version 1.0
+ * @version 2.0
  */
 public class TrainingPanel {
+
+    /** Поле сервиса для взаимодействия с базой данных*/
+    private static final TrainingService trainingService = new TrainingServiceImpl();
+
+    /** Поле сервиса для взаимодействия с базой данных*/
+    private static final UserService userService = new UserServiceImpl();
 
     private TrainingPanel() {}
 
@@ -30,10 +37,9 @@ public class TrainingPanel {
      * пользователь хотел бы указать.
      * @param user владелец дневника тренировок
      * @param date дата тренировки
-     * @return возвращает тренировку с заполненными полями, если она в прошедшем времени, если в будущем, то поля
      * заполняются частично
      */
-    public static Training enterTraining(User user, Date date) {
+    public static void enterTraining(User user, Date date) {
         boolean isPlanned = date.after(new Date(System.currentTimeMillis()));
         if(isPlanned) {
             System.out.println("Тренировка будет добавлена в качестве запланированной" +
@@ -41,7 +47,8 @@ public class TrainingPanel {
                 ", а так же по прошествию тренировки вносить результаты");
         }
         Training training = chooseTypeOfTraining(user, date);
-
+        training.setDate(date);
+        training.setUserId(user.getId());
         System.out.print("Введите название тренировки: ");
         training.setName(ConsoleReader.enterStringValue(3));
         if(!isPlanned) {
@@ -50,9 +57,14 @@ public class TrainingPanel {
             System.out.print("Введите длительность тренировки в минутах: ");
             training.setDurationInMinutes(ConsoleReader.enterDoubleValue());
         }
+        trainingService.saveTraining(training);
+        long trainingId = trainingService.getTrainingId(training.getName(), training.getType(), date,
+                training.getCaloriesSpent(), training.getDurationInMinutes(), user.getId());
+        training.setId(trainingId);
         chooseToAddAdditionalDataToTraining(user, training);
 
-        return training;
+        System.out.println("Тренировка успешно добавлена\n");
+        userService.saveUserAudit(user.getId(), "Добавление тренировки", UserAuditResult.SUCCESS);
     }
 
     /**
@@ -71,8 +83,8 @@ public class TrainingPanel {
 
         if(containsTypeOfTrainingInUserHistory(user, date, type)) {
             System.out.println("Нельзя создавать тренировки одинаковых типов в один день");
-            UserAudit.addLog("add type data to training", LocalDateTime.now()
-                    , user.getUsername(), UserAuditResult.FAIL);
+            userService.saveUserAudit(user.getId(), "Добавление типа к тренировке", UserAuditResult.FAIL);
+
             UserPanel.printUserPage(user);
         } else {
             training = new Training();
@@ -89,8 +101,14 @@ public class TrainingPanel {
      * @return true - если метод обнаружил тип тренировки, false - если метод не обнаружил тип тренировки
      */
     private static boolean containsTypeOfTrainingInUserHistory(User user, Date date, String type) {
-        if(user.getTrainingHistory().containsKey(date)) {
-            List<Training> trainingList = user.getTrainingHistory().get(date);
+        if(!trainingService.getAllTrainings(user.getId())
+                .stream()
+                .filter(training -> training.getDate().equals(date))
+                .toList().isEmpty()) {
+
+            List<Training> trainingList = trainingService.getAllTrainings(user.getId()).stream()
+                    .filter(training -> training.getDate().equals(date))
+                    .toList();
             for (Training createdTraining : trainingList) {
                 if (createdTraining.getType().equals(type)) {
                     return true;
@@ -120,8 +138,8 @@ public class TrainingPanel {
             case 0 -> {}
             default -> {
                 System.out.println("Некорректный ввод данных, повторите попытку");
-                UserAudit.addLog("add additional data to training", LocalDateTime.now()
-                        , user.getUsername(), UserAuditResult.FAIL);
+                userService.saveUserAudit(user.getId(),
+                        "Добавление дополнительной информации к тренировке", UserAuditResult.FAIL);
                 chooseToAddAdditionalDataToTraining(user, training);
             }
         }
@@ -137,15 +155,21 @@ public class TrainingPanel {
     public static void addAdditionalDataToTraining(User user, Training training) {
         System.out.print("\nВведите название дополнительной информации: ");
         String name = ConsoleReader.enterStringValue(3);
-
+        if(!trainingService.getAllAdditionalData(training.getId()).stream()
+                .filter(data -> data.getName().equals(name)).toList().isEmpty()) {
+            System.out.println("Нельзя добавлять одинаковые дополнительные информации, вам необходимо редактировать её");
+            UserPanel.printUserPage(user);
+        }
         System.out.print("Введите значение дополнительной информации: ");
         String value = ConsoleReader.enterStringValue(0);
 
-        training.addAdditionalData(new AdditionalData(name, value));
+        trainingService.saveAdditionalData(name, value, training.getId());
+        training.getAdditionalDataMap().put(name, value);
         System.out.println("Дополнительная информация успешно добавлена, вы можете добавить ещё");
 
-        UserAudit.addLog("add additional data to training", LocalDateTime.now()
-                , user.getUsername(), UserAuditResult.SUCCESS);
+        userService.saveUserAudit(user.getId(),
+                "Добавление дополнительной информации к тренировке", UserAuditResult.SUCCESS);
+
         chooseToAddAdditionalDataToTraining(user, training);
     }
 }

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="003-create-training-diary-tables" author="Denis" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users" schemaName="training_diary"/>
+                <tableExists tableName="admins" schemaName="training_diary"/>
+                <tableExists tableName="trainings" schemaName="training_diary"/>
+                <tableExists tableName="additional_data" schemaName="training_diary"/>
+                <tableExists tableName="user_audit_result" schemaName="training_diary"/>
+                <tableExists tableName="user_audit" schemaName="training_diary"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="users" schemaName="training_diary">
+            <column name="id" type="BIGINT" defaultValueComputed="nextval('training_diary.user_id_seq')">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="name" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="password" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="admins" schemaName="training_diary">
+            <column name="id" type="BIGINT" defaultValueComputed="nextval('training_diary.admin_id_seq')">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_user_with_root_id" references="training_diary.users(id)"/>
+            </column>
+
+            <column name="admin_level" type="TINYINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="trainings" schemaName="training_diary">
+            <column name="id" type="BIGINT" defaultValueComputed="nextval('training_diary.training_id_seq')">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="calories_spent" type="INT"/>
+            <column name="duration_in_minutes" type="DECIMAL(10, 2)"/>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_user_id" references="training_diary.users(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="additional_data" schemaName="training_diary">
+            <column name="id" type="BIGINT" defaultValueComputed="nextval('training_diary.additional_data_id_seq')">
+                <constraints primaryKeyName="true" />
+            </column>
+
+            <column name="name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="value" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="training_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_training_id"
+                             references="training_diary.trainings(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_audit_result" schemaName="training_diary">
+            <column name="result" type="VARCHAR(10)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_audit" schemaName="training_diary">
+            <column name="id" type="BIGINT" defaultValueComputed="nextval('training_diary.user_audit_id_seq')">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_audit_user_id" references="training_diary.users(id)"/>
+            </column>
+
+            <column name="action" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="result" type="VARCHAR(10)">
+                <constraints nullable="false" foreignKeyName="fk_user_result"
+                             references="training_diary.user_audit_result(result)"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

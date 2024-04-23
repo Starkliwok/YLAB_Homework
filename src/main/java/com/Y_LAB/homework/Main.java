@@ -1,14 +1,12 @@
 package com.Y_LAB.homework;
 
 import com.Y_LAB.homework.in.user_panel.HomePanel;
-import com.Y_LAB.homework.roles.Admin;
-import com.Y_LAB.homework.roles.User;
-
+import com.Y_LAB.homework.util.db.ConnectionToDatabase;
+import com.Y_LAB.homework.util.init.LiquibaseConfig;
 
 public class Main {
     public static void main(String[] args) {
-        User admin = new Admin("root", "root");
-        User.addUserToUserSet(admin);
+        LiquibaseConfig.initMigration(ConnectionToDatabase.getConnection());
         HomePanel.printStartPage();
     }
 }
